@@ -1,15 +1,15 @@
 <?php
-require_once __DIR__ . "/../Models/Product.php";
 
-class HomeController {
+class HomeController
+{
+    public function index()
+    {
+        $pageTitle = "Trang Chủ - Thời Trang Nữ";
 
-    public function renderGiaoDien() {
-
-        $productModel = new Product();
-
-        $products = $productModel->getAllProducts();
-
-        require "Views/pages/home.php";
+        if (file_exists('views/home.php')) {
+            include 'views/home.php';
+        } else {
+            echo "Chào mừng bạn đến với Website Thời Trang Nữ!";
+        }
     }
-
 }

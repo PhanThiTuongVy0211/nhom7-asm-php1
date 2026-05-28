@@ -21,7 +21,7 @@ if (isset($_GET['pages']) && !empty($_GET['pages'])) {
  
         case "home":
             $controller = new HomeController();
-            $controller->renderGiaoDien();
+            $controller->index();
             break;
  
         case "chi-tiet-san-pham":
@@ -57,7 +57,6 @@ if (isset($_GET['pages']) && !empty($_GET['pages'])) {
             break;
  
         case "dang-xuat":
-            // Xử lý đăng xuất
             session_destroy();
             header('Location: ?pages=home');
             exit;
@@ -70,7 +69,7 @@ if (isset($_GET['pages']) && !empty($_GET['pages'])) {
 } else {
  
     $controller = new HomeController();
-    $controller->renderGiaoDien();
+    $controller->index();
  
 }
  
