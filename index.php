@@ -29,7 +29,7 @@ if (isset($_GET['pages']) && !empty($_GET['pages'])) {
             break;
  
         case "san-pham":
-            require "Views/pages/products.php";
+            require "Views/pages/product.php";
             break;
  
         case "gio-hang":
