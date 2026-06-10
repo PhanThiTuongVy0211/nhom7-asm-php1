@@ -43,7 +43,7 @@
             text-transform: uppercase !important;
             color: #1a1a1a !important;
             padding: 10px 15px !important;
-            white-space: nowrap !important; /* Giữ chữ trên cùng 1 hàng */
+            white-space: nowrap !important;
             transition: all 0.3s ease;
          }
 
@@ -62,14 +62,14 @@
             list-style: none !important;
             padding-left: 0 !important;
             margin-bottom: 0 !important;
-            gap: 18px; /* Khoảng cách đều giữa các nút */
+            gap: 18px;
          }
 
          .navbar_right-actions .nav-item {
             white-space: nowrap !important;
          }
 
-         /* Định dạng chung cho Icon SVG (Giỏ hàng & Tìm kiếm) */
+         
          .nav-icon-svg {
             width: 20px;
             height: 20px;
@@ -80,10 +80,10 @@
          
          .nav-item:hover .nav-icon-svg,
          .btn-search-trigger:hover .nav-icon-svg {
-            fill: #f7444e; /* Đổi màu đỏ khi hover */
+            fill: #f7444e; 
          }
 
-         /* Nút bấm tìm kiếm sạch lỗi ô vuông */
+        
          .btn-search-trigger {
             background: none;
             border: none;
@@ -95,12 +95,12 @@
             outline: none !important;
          }
 
-         /* Màu sắc nút Đăng nhập / Đăng ký theo ảnh mẫu */
+       
          .btn-login-highlight {
-            color: #007bff !important; /* Màu xanh dương giống ảnh mới nhất */
+            color: #007bff !important;
          }
          .btn-register-highlight {
-            color: #f7444e !important; /* Màu đỏ giống ảnh mới nhất */
+            color: #f7444e !important; 
          }
 
          .dropdown-menu {

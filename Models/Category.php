@@ -7,72 +7,76 @@ class Category {
 
     public function __construct() {
         $database = new Database();
-        $this->conn = $database->getConnection();
+        $this->conn = $database->getConnection(); // Hết gạch đỏ vì tên hàm đã khớp
     }
 
-    // Lấy tất cả danh mục
     public function getAll() {
         $sql = "SELECT * FROM {$this->table} ORDER BY id DESC";
-        $result = $this->conn->query($sql);
-        return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+        $stmt = $this->conn->query($sql);
+        return $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
     }
 
-    // Lấy danh mục theo ID
     public function getById($id) {
-        $id = (int)$id;
-        $sql = "SELECT * FROM {$this->table} WHERE id = $id LIMIT 1";
-        $result = $this->conn->query($sql);
-        return $result ? $result->fetch_assoc() : null;
+        $sql = "SELECT * FROM {$this->table} WHERE id = :id LIMIT 1";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute(['id' => (int)$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
-    // Thêm danh mục
     public function insert($data) {
-        $name        = $this->conn->real_escape_string(trim($data['name']));
-        $description = $this->conn->real_escape_string(trim($data['description'] ?? ''));
+        $name        = trim($data['name']);
+        $description = trim($data['description'] ?? '');
         $status      = isset($data['status']) ? (int)$data['status'] : 1;
 
         $sql = "INSERT INTO {$this->table} (name, description, status, created_at)
-                VALUES ('$name', '$description', $status, NOW())";
+                VALUES (:name, :description, :status, NOW())";
 
-        return $this->conn->query($sql);
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute([
+            'name'        => $name,
+            'description' => $description,
+            'status'      => $status
+        ]);
     }
 
-    // Cập nhật danh mục
     public function update($id, $data) {
-        $id          = (int)$id;
-        $name        = $this->conn->real_escape_string(trim($data['name']));
-        $description = $this->conn->real_escape_string(trim($data['description'] ?? ''));
+        $name        = trim($data['name']);
+        $description = trim($data['description'] ?? '');
         $status      = isset($data['status']) ? (int)$data['status'] : 1;
 
         $sql = "UPDATE {$this->table}
-                SET name = '$name',
-                    description = '$description',
-                    status = $status,
+                SET name = :name,
+                    description = :description,
+                    status = :status,
                     updated_at = NOW()
-                WHERE id = $id";
+                WHERE id = :id";
 
-        return $this->conn->query($sql);
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute([
+            'name'        => $name,
+            'description' => $description,
+            'status'      => $status,
+            'id'          => (int)$id
+        ]);
     }
 
-    // Xóa danh mục
     public function delete($id) {
-        $id = (int)$id;
-        $sql = "DELETE FROM {$this->table} WHERE id = $id";
-        return $this->conn->query($sql);
+        $sql = "DELETE FROM {$this->table} WHERE id = :id";
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute(['id' => (int)$id]);
     }
 
-    // Lấy danh mục đang hiển thị (dùng cho frontend)
     public function getActive() {
         $sql = "SELECT * FROM {$this->table} WHERE status = 1 ORDER BY name ASC";
-        $result = $this->conn->query($sql);
-        return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+        $stmt = $this->conn->query($sql);
+        return $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
     }
 
-    // Đếm số sản phẩm theo danh mục
     public function countProducts($id) {
-        $id = (int)$id;
-        $sql = "SELECT COUNT(*) as total FROM products WHERE category_id = $id";
-        $result = $this->conn->query($sql);
-        return $result ? $result->fetch_assoc()['total'] : 0;
+        $sql = "SELECT COUNT(*) as total FROM products WHERE category_id = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute(['id' => (int)$id]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ? (int)$result['total'] : 0;
     }
 }
