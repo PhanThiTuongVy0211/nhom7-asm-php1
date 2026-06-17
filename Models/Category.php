@@ -14,65 +14,141 @@ class Category {
     public function getAll() {
         $sql = "SELECT * FROM {$this->table} ORDER BY id DESC";
         $result = $this->conn->query($sql);
+
         return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
     }
 
     // Lấy danh mục theo ID
     public function getById($id) {
-        $id = (int)$id;
-        $sql = "SELECT * FROM {$this->table} WHERE id = $id LIMIT 1";
-        $result = $this->conn->query($sql);
+        $stmt = $this->conn->prepare(
+            "SELECT * FROM {$this->table} WHERE id = ? LIMIT 1"
+        );
+
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+
         return $result ? $result->fetch_assoc() : null;
     }
 
     // Thêm danh mục
     public function insert($data) {
-        $name        = $this->conn->real_escape_string(trim($data['name']));
-        $description = $this->conn->real_escape_string(trim($data['description'] ?? ''));
-        $status      = isset($data['status']) ? (int)$data['status'] : 1;
 
-        $sql = "INSERT INTO {$this->table} (name, description, status, created_at)
-                VALUES ('$name', '$description', $status, NOW())";
+        if (empty($data['name'])) {
+            return false;
+        }
 
-        return $this->conn->query($sql);
+        $name = trim($data['name']);
+        $description = isset($data['description'])
+            ? trim($data['description'])
+            : '';
+
+        $status = isset($data['status'])
+            ? (int)$data['status']
+            : 1;
+
+        $stmt = $this->conn->prepare(
+            "INSERT INTO {$this->table}
+            (name, description, status, created_at)
+            VALUES (?, ?, ?, NOW())"
+        );
+
+        $stmt->bind_param(
+            "ssi",
+            $name,
+            $description,
+            $status
+        );
+
+        return $stmt->execute();
     }
 
     // Cập nhật danh mục
     public function update($id, $data) {
-        $id          = (int)$id;
-        $name        = $this->conn->real_escape_string(trim($data['name']));
-        $description = $this->conn->real_escape_string(trim($data['description'] ?? ''));
-        $status      = isset($data['status']) ? (int)$data['status'] : 1;
 
-        $sql = "UPDATE {$this->table}
-                SET name = '$name',
-                    description = '$description',
-                    status = $status,
-                    updated_at = NOW()
-                WHERE id = $id";
+        if (empty($data['name'])) {
+            return false;
+        }
 
-        return $this->conn->query($sql);
+        $name = trim($data['name']);
+
+        $description = isset($data['description'])
+            ? trim($data['description'])
+            : '';
+
+        $status = isset($data['status'])
+            ? (int)$data['status']
+            : 1;
+
+        $stmt = $this->conn->prepare(
+            "UPDATE {$this->table}
+             SET name = ?,
+                 description = ?,
+                 status = ?,
+                 updated_at = NOW()
+             WHERE id = ?"
+        );
+
+        $stmt->bind_param(
+            "ssii",
+            $name,
+            $description,
+            $status,
+            $id
+        );
+
+        return $stmt->execute();
     }
 
     // Xóa danh mục
     public function delete($id) {
-        $id = (int)$id;
-        $sql = "DELETE FROM {$this->table} WHERE id = $id";
-        return $this->conn->query($sql);
+
+        $stmt = $this->conn->prepare(
+            "DELETE FROM {$this->table} WHERE id = ?"
+        );
+
+        $stmt->bind_param("i", $id);
+
+        return $stmt->execute();
     }
 
-    // Lấy danh mục đang hiển thị (dùng cho frontend)
+    // Lấy danh mục đang hiển thị
     public function getActive() {
-        $sql = "SELECT * FROM {$this->table} WHERE status = 1 ORDER BY name ASC";
-        $result = $this->conn->query($sql);
-        return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+
+        $stmt = $this->conn->prepare(
+            "SELECT * FROM {$this->table}
+             WHERE status = 1
+             ORDER BY name ASC"
+        );
+
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+
+        return $result
+            ? $result->fetch_all(MYSQLI_ASSOC)
+            : [];
     }
 
     // Đếm số sản phẩm theo danh mục
     public function countProducts($id) {
-        $id = (int)$id;
-        $sql = "SELECT COUNT(*) as total FROM products WHERE category_id = $id";
-        $result = $this->conn->query($sql);
-        return $result ? $result->fetch_assoc()['total'] : 0;
+
+        $stmt = $this->conn->prepare(
+            "SELECT COUNT(*) AS total
+             FROM products
+             WHERE category_id = ?"
+        );
+
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+
+        if ($row = $result->fetch_assoc()) {
+            return $row['total'];
+        }
+
+        return 0;
     }
 }
