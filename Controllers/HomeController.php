@@ -1,15 +1,15 @@
 <?php
-require_once __DIR__ . "/../Models/Product.php";
 
 class HomeController {
+    private $productModel;
+
+    public function __construct($productModel) {
+        $this->productModel = $productModel;
+    }
 
     public function renderGiaoDien() {
-
-        $productModel = new Product();
-
-        $products = $productModel->getAllProducts();
+        $products = $this->productModel->getAllProducts();
 
         require "Views/pages/home.php";
     }
-
 }

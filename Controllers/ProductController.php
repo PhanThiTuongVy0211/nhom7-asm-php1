@@ -1,36 +1,27 @@
-<!-- danh sách bài viết theo phân loại -->
- <?php
+<?php
 
-require_once __DIR__ . '/../Models/products.php';
+    class ProductController {
+    private $productModel;
 
-class ProductController {
-
-    private $products;
-
-    public function __construct(){
-
-        require __DIR__ . '/../Models/products.php';
-
-        $this->products = $products;
+    public function __construct($productModel) {
+        $this->productModel = $productModel;
     }
 
-    public function index(){
-
-        return $this->products;
+    public function list() {
+        $products = $this->productModel->getAllProducts();
+        require "Views/pages/products.php";
     }
 
-    public function find($id){
+    public function detail() {
+        $id = $_GET['id'] ?? null;
 
-        foreach($this->products as $product){
-
-            if($product['id'] == $id){
-
-                return $product;
-            }
+        if (!$id) {
+            echo "Thiếu ID sản phẩm";
+            return;
         }
 
-        return null;
-    }
+        $product = $this->productModel->getProductById($id);
 
+        require "Views/pages/product-detail.php";
+    }
 }
-?>
