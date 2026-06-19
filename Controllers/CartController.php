@@ -14,7 +14,7 @@ class CartController
         $this->cartModel = new Cart($pdo);
     }
 
-    // [Dòng 13 + 14] Điều hướng và hiển thị danh sách sản phẩm trong giỏ hàng
+    // Dòng 13 +  14  hướng và hiển thị danh sách sản phẩm trong giỏ hàng
     public function index()
     {
         $cartItems = [];
@@ -29,11 +29,10 @@ class CartController
             }
         }
 
-        // Gọi View hiển thị giao diện giỏ hàng
         require_once 'Views/pages/cart.php';
     }
 
-    // [Dòng 15] Cập nhật số lượng sản phẩm trong giỏ hàng
+    // Dòng 15 Cập nhật số lượng sản phẩm trong giỏ hàng
     public function update()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
