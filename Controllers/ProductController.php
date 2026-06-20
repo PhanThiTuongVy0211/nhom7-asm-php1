@@ -1,16 +1,11 @@
 <!-- danh sách bài viết theo phân loại -->
- <?php
-
-require_once __DIR__ . '/../Models/products.php';
+<?php
 
 class ProductController {
 
     private $products;
 
-    public function __construct(){
-
-        require __DIR__ . '/../Models/products.php';
-
+    public function __construct($products){
         $this->products = $products;
     }
 

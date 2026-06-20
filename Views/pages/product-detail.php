@@ -1,8 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../../Controllers/ProductController.php';
-
-$productController = new ProductController();
+$productController = new ProductController($products);
 
 $id = $_GET['id'] ?? 0;
 
@@ -293,7 +291,7 @@ if (!$product) {
             <div class="detail-image">
 
                 <img
-                    src="../../assets/<?php echo $product['image']; ?>"
+                src="../../assets/<?php echo $product['image']; ?>"
                     alt="">
 
             </div>
@@ -402,7 +400,7 @@ if (!$product) {
 
                 <p>
                     Hỗ trợ đổi trả trong 7 ngày
-                </p>
+                    </p>
 
             </div>
 
