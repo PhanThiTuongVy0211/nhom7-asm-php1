@@ -396,7 +396,7 @@ $total = $subtotal + $shipping;
                     Giỏ hàng đang trống
                 </h2>
 
-                <a href="../pages/product.php" class="shop-btn">
+                <a href="product.php" class="shop-btn">
                     Mua sắm ngay
                 </a>
 

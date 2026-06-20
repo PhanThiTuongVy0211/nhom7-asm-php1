@@ -6,21 +6,37 @@ session_start();
 ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
- 
+// Models
+require_once "Models/Cart.php";
+require_once "Models/Category.php";
+require_once "Models/Order.php";
+require_once "Models/Product.php";
+require_once "Models/Products.php";
+require_once "Models/User.php";
+require_once "Models/Database.php";
+
+
+// Controllers
 require_once "Controllers/HomeController.php";
 require_once "Controllers/ProductController.php";
 require_once "Controllers/UserController.php";
 require_once "Controllers/OrderController.php";
 require_once "Controllers/CartController.php";
- 
+require_once "Controllers/CategoryController.php";
+
+$db = new Database();
+$pdo = $db -> connect();
+
 require "Views/layouts/header.php";
- 
+$productModel = new Product($pdo);
+
+
 if (isset($_GET['pages']) && !empty($_GET['pages'])) {
  
     switch ($_GET['pages']) {
  
         case "home":
-            $controller = new HomeController();
+            $controller = new HomeController($productModel);
             $controller->renderGiaoDien();
             break;
  
@@ -61,7 +77,7 @@ if (isset($_GET['pages']) && !empty($_GET['pages'])) {
             session_destroy();
             header('Location: ?pages=home');
             exit;
- 
+        
         default:
             echo "<h2 style='text-align:center; margin-top:50px;'>404 - Trang không tồn tại</h2>";
             break;
@@ -69,7 +85,7 @@ if (isset($_GET['pages']) && !empty($_GET['pages'])) {
  
 } else {
  
-    $controller = new HomeController();
+    $controller = new HomeController($productModel);
     $controller->renderGiaoDien();
  
 }

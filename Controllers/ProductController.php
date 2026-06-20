@@ -1,14 +1,10 @@
 <?php
 
-require_once __DIR__ . '/../Models/products.php';
-
 class ProductController {
 
     private $products;
 
     public function __construct(){
-
-        require __DIR__ . '/../Models/products.php';
 
         $this->products = $products;
     }

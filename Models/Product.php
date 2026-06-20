@@ -3,8 +3,9 @@
 class Product {
 
     public function getAllProducts() {
-
-        return [];
+        {
+        $sql = "SELECT * FROM products";
+    }
 
     }
 
