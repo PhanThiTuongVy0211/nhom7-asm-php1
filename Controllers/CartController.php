@@ -3,7 +3,7 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once 'Models/Cart.php';
+
 
 class CartController
 {
@@ -65,7 +65,7 @@ class CartController
             $productId = intval($_POST['product_id']);
             $quantity = isset($_POST['quantity']) ? intval($_POST['quantity']) : 1;
 
-            // Giả định dữ liệu sản phẩm lấy từ ProductModel (ở đây demo mảng cứng)
+            // Giả định dữ liệu sản phẩm lấy từ ProductModel
             $productName = $_POST['product_name'];
             $productPrice = floatval($_POST['product_price']);
             $productImg = isset($_POST['product_img']) ? $_POST['product_img'] : '';

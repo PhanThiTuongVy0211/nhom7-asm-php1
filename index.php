@@ -16,6 +16,7 @@ require_once "Controllers/ProductController.php";
 require_once "Controllers/OrderController.php";
 require_once "Controllers/CartController.php"; 
 require "Views/layouts/header.php";
+require_once 'Models/Cart.php';
 
 if (isset($_GET['pages']) && !empty($_GET['pages'])) {
 
