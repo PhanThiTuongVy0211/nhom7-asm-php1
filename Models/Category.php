@@ -1,152 +1,104 @@
 <?php
-require_once __DIR__ . '/../config/database.php';
+require_once 'Database.php';
 
-class Category {
-    private $conn;
+class Category
+{
+    private $db;
     private $table = 'categories';
 
-    public function __construct() {
-        $database = new Database();
-        $this->conn = $database->getConnection();
+    public function __construct()
+    {
+        // ĐỒNG BỘ: Sử dụng lớp Database tập trung để tránh xung đột MySQLi và PDO
+        $this->db = new Database();
     }
 
     // Lấy tất cả danh mục
-    public function getAll() {
+    public function getAll()
+    {
         $sql = "SELECT * FROM {$this->table} ORDER BY id DESC";
-        $result = $this->conn->query($sql);
-
-        return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+        $result = $this->db->query($sql);
+        return $result ? $result : [];
     }
 
     // Lấy danh mục theo ID
-    public function getById($id) {
-        $stmt = $this->conn->prepare(
-            "SELECT * FROM {$this->table} WHERE id = ? LIMIT 1"
-        );
-
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-
-        $result = $stmt->get_result();
-
-        return $result ? $result->fetch_assoc() : null;
+    public function getById($id)
+    {
+        $sql = "SELECT * FROM {$this->table} WHERE id = :id LIMIT 1";
+        $result = $this->db->query($sql, ['id' => $id]);
+        return $result ? $result[0] : null;
     }
 
-    // Thêm danh mục
-    public function insert($data) {
-
+    // Thêm danh mục mới
+    public function insert($data)
+    {
         if (empty($data['name'])) {
             return false;
         }
 
         $name = trim($data['name']);
-        $description = isset($data['description'])
-            ? trim($data['description'])
-            : '';
+        $description = isset($data['description']) ? trim($data['description']) : '';
+        $status = isset($data['status']) ? (int) $data['status'] : 1;
 
-        $status = isset($data['status'])
-            ? (int)$data['status']
-            : 1;
+        $sql = "INSERT INTO {$this->table} (name, description, status, created_at) 
+                VALUES (:name, :description, :status, NOW())";
 
-        $stmt = $this->conn->prepare(
-            "INSERT INTO {$this->table}
-            (name, description, status, created_at)
-            VALUES (?, ?, ?, NOW())"
-        );
-
-        $stmt->bind_param(
-            "ssi",
-            $name,
-            $description,
-            $status
-        );
-
-        return $stmt->execute();
+        // Sử dụng hàm query chuẩn của Database.php để thực thi dữ liệu an toàn
+        return $this->db->query($sql, [
+            'name' => $name,
+            'description' => $description,
+            'status' => $status
+        ]);
     }
 
     // Cập nhật danh mục
-    public function update($id, $data) {
-
+    public function update($id, $data)
+    {
         if (empty($data['name'])) {
             return false;
         }
 
         $name = trim($data['name']);
+        $description = isset($data['description']) ? trim($data['description']) : '';
+        $status = isset($data['status']) ? (int) $data['status'] : 1;
 
-        $description = isset($data['description'])
-            ? trim($data['description'])
-            : '';
+        $sql = "UPDATE {$this->table} 
+                SET name = :name, 
+                    description = :description, 
+                    status = :status, 
+                    updated_at = NOW() 
+                WHERE id = :id";
 
-        $status = isset($data['status'])
-            ? (int)$data['status']
-            : 1;
-
-        $stmt = $this->conn->prepare(
-            "UPDATE {$this->table}
-             SET name = ?,
-                 description = ?,
-                 status = ?,
-                 updated_at = NOW()
-             WHERE id = ?"
-        );
-
-        $stmt->bind_param(
-            "ssii",
-            $name,
-            $description,
-            $status,
-            $id
-        );
-
-        return $stmt->execute();
+        return $this->db->query($sql, [
+            'name' => $name,
+            'description' => $description,
+            'status' => $status,
+            'id' => $id
+        ]);
     }
 
     // Xóa danh mục
-    public function delete($id) {
-
-        $stmt = $this->conn->prepare(
-            "DELETE FROM {$this->table} WHERE id = ?"
-        );
-
-        $stmt->bind_param("i", $id);
-
-        return $stmt->execute();
+    public function delete($id)
+    {
+        $sql = "DELETE FROM {$this->table} WHERE id = :id";
+        return $this->db->query($sql, ['id' => $id]);
     }
 
     // Lấy danh mục đang hiển thị
-    public function getActive() {
-
-        $stmt = $this->conn->prepare(
-            "SELECT * FROM {$this->table}
-             WHERE status = 1
-             ORDER BY name ASC"
-        );
-
-        $stmt->execute();
-
-        $result = $stmt->get_result();
-
-        return $result
-            ? $result->fetch_all(MYSQLI_ASSOC)
-            : [];
+    public function getActive()
+    {
+        $sql = "SELECT * FROM {$this->table} WHERE status = 1 ORDER BY name ASC";
+        $result = $this->db->query($sql);
+        return $result ? $result : [];
     }
 
-    // Đếm số sản phẩm theo danh mục
-    public function countProducts($id) {
+    // Đếm số sản phẩm thuộc danh mục
+    public function countProducts($id)
+    {
+        $sql = "SELECT COUNT(*) AS total FROM products WHERE category_id = :id";
+        $result = $this->db->query($sql, ['id' => $id]);
 
-        $stmt = $this->conn->prepare(
-            "SELECT COUNT(*) AS total
-             FROM products
-             WHERE category_id = ?"
-        );
-
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-
-        $result = $stmt->get_result();
-
-        if ($row = $result->fetch_assoc()) {
-            return $row['total'];
+        if ($result && isset($result[0]['total'])) {
+            return (int) $result[0]['total'];
         }
 
         return 0;

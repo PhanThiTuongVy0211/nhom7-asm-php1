@@ -1,71 +1,59 @@
 <?php
-// Models/AdminOrder.php
-class AdminOrder
+class OrderModel
 {
     private $db;
 
-    public function __construct($pdo)
+    public function __construct()
     {
-        $this->db = $pdo;
+        try {
+            $this->db = new PDO("mysql:host=localhost;dbname=web_thoi_trang_nu;charset=utf8", "root", "");
+            $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (PDOException $e) {
+            echo "Kết nối thất bại: " . $e->getMessage();
+        }
     }
 
-    // Lấy toàn bộ danh sách đơn hàng hiển thị tại trang quản trị
+    // Lấy toàn bộ danh sách đơn hàng mua đồ thời trang cho Admin
     public function getAllOrders()
     {
         $sql = "SELECT * FROM orders ORDER BY created_at DESC";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute();
+        $stmt = $this->db->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Xem chi tiết một đơn hàng cụ thể
-    public function getOrderById($orderId)
+    // Cập nhật trạng thái giao hàng / thanh toán của đơn hàng
+    public function updateStatus($orderId, $status)
     {
-        $sql = "SELECT * FROM orders WHERE id = :id";
+        $sql = "UPDATE orders SET status = :status WHERE id = :id";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute(['id' => $orderId]);
+        return $stmt->execute([
+            ':status' => $status,
+            ':id' => $orderId
+        ]);
+    }
+
+    // --- BỔ SUNG THÊM CÁC HÀM NÀY ĐỂ ĐỒNG BỘ VỚI CONTROLLER ---
+    public function getOrderById($id)
+    {
+        $sql = "SELECT * FROM orders WHERE id = :id LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':id' => $id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // Lấy danh sách sản phẩm thuộc đơn hàng đó
     public function getOrderDetails($orderId)
     {
-        $sql = "SELECT od.*, p.name FROM order_details od 
-                JOIN products p ON od.product_id = p.id 
-                WHERE od.order_id = :order_id";
+        // Giả sử bảng chi tiết đơn hàng của bạn là order_details
+        $sql = "SELECT * FROM order_details WHERE order_id = :order_id";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute(['order_id' => $orderId]);
+        $stmt->execute([':order_id' => $orderId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Cập nhật trạng thái xử lý đơn hàng (Ví dụ: Đang xử lý, Đã giao, Hủy)
-    public function updateStatus($orderId, $status)
+    public function deleteOrder($id)
     {
-        $sql = "UPDATE orders SET status = :status, updated_at = NOW() WHERE id = :id";
+        $sql = "DELETE FROM orders WHERE id = :id";
         $stmt = $this->db->prepare($sql);
-        return $stmt->execute(['status' => $status, 'id' => $orderId]);
-    }
-
-    // Xóa đơn hàng (Nếu cần)
-    public function deleteOrder($orderId)
-    {
-        try {
-            $this->db->beginTransaction();
-            // Xóa chi tiết đơn hàng trước do ràng buộc khóa ngoại
-            $sqlDetail = "DELETE FROM order_details WHERE order_id = :order_id";
-            $stmtDetail = $this->db->prepare($sqlDetail);
-            $stmtDetail->execute(['order_id' => $orderId]);
-
-            // Xóa đơn hàng chính
-            $sqlOrder = "DELETE FROM orders WHERE id = :id";
-            $stmtOrder = $this->db->prepare($sqlOrder);
-            $stmtOrder->execute(['id' => $orderId]);
-
-            $this->db->commit();
-            return true;
-        } catch (Exception $e) {
-            $this->db->rollBack();
-            return false;
-        }
+        return $stmt->execute([':id' => $id]);
     }
 }

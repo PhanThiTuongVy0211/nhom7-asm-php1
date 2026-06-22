@@ -1,39 +1,47 @@
-<div class="container mt-5">
-    <h2>Giỏ Hàng Thời Trang Của Bạn</h2>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Hình ảnh</th>
-                <th>Tên sản phẩm</th>
-                <th>Giá</th>
-                <th>Số lượng</th>
-                <th>Tổng cộng</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if (empty($cartItems)): ?>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Hình ảnh</th>
+            <th>Tên sản phẩm</th>
+            <th>Giá</th>
+            <th>Số lượng</th>
+            <th>Thành tiền</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <?php if (!empty($cartProducts)): ?>
+            <?php foreach ($cartProducts as $item): ?>
                 <tr>
-                    <td colspan="5" class="text-center">Giỏ hàng đang trống rỗng! Hãy đi mua váy áo nào!</td>
+                    <td><img src="assets/images/<?php echo $item['image']; ?>" width="80"></td>
+                    <td><?php echo $item['name']; ?></td>
+                    <td><?php echo number_format($item['price'], 0, ',', '.'); ?>đ</td>
+                    <td>
+                        <form action="index.php?pages=cap-nhat-gio-hang" method="POST">
+                            <input type="hidden" name="product_id" value="<?php echo $item['id']; ?>">
+                            <input type="number" name="quantity" value="<?php echo $item['quantity']; ?>" min="1"
+                                style="width:60px;">
+                            <button type="submit" class="btn btn-sm btn-primary">Cập nhật</button>
+                        </form>
+                    </td>
+                    <td>
+                        <?php
+                        $subtotal = $item['price'] * $item['quantity'];
+                        echo number_format($subtotal, 0, ',', '.');
+                        ?>đ
+                    </td>
                 </tr>
-            <?php else: ?>
-                <?php foreach ($cartItems as $item): ?>
-                    <tr>
-                        <td><img src="assets/images/<?= $item['image'] ?>" width="80"></td>
-                        <td><?= $item['name'] ?></td>
-                        <td><?= number_format($item['price']) ?> đ</td>
-                        <td>
-                            <form action="index.php?action=update_cart" method="POST">
-                                <input type="hidden" name="cart_id" value="<?= $item['cart_id'] ?>">
-                                <input type="number" name="quantity" value="<?= $item['quantity'] ?>" min="0"
-                                    style="width: 60px;">
-                                <button type="submit" class="btn btn-sm btn-primary">Sửa</button>
-                            </form>
-                        </td>
-                        <td><?= number_format($item['price'] * $item['quantity']) ?> đ</td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        </tbody>
-    </table>
-    <a href="index.php?action=checkout" class="btn btn-success float-right">Tiến hành thanh toán</a>
-</div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <tr>
+                <td colspan="5" style="text-align: center;">Giỏ hàng trống!</td>
+            </tr>
+        <?php endif; ?>
+    </tbody>
+</table>
+
+<?php if (!empty($cartProducts)): ?>
+    <div style="text-align: right; margin-top: 20px;">
+        <a href="index.php?pages=thanh-toan" class="btn btn-success">Tiến hành thanh toán</a>
+    </div>
+<?php endif; ?>

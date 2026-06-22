@@ -7,16 +7,25 @@ ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 
 require_once 'Models/Database.php';
-// require_once 'Models/Product.php';
-$db = new Database();
-$pdo = $db->connect();
 
+$db = new Database();
+
+/** @var PDO $pdo */
+$pdo = $db->connect(); // Đã kích hoạt kết nối và gán vào biến $pdo để dùng cho các Controller bên dưới
+
+// --- NẠP CÁC FILE CONTROLLER ---
 require_once "Controllers/HomeController.php";
 require_once "Controllers/ProductController.php";
-require_once "Controllers/OrderController.php";
-require_once "Controllers/CartController.php"; 
+require_once "Controllers/CartController.php";
+require_once "Controllers/OrderController.php"; 
+// Nạp file chứa lớp AdminOrderController của bạn
+
+// --- NẠP CÁC THÀNH PHẦN KHÁC ---
 require "Views/layouts/header.php";
 require_once 'Models/Cart.php';
+require_once 'Models/Order.php';
+require_once "Models/Category.php";
+ // Đã bổ sung nạp đúng Model quản lý đơn hàng công việc của Nguyên
 
 if (isset($_GET['pages']) && !empty($_GET['pages'])) {
 
@@ -37,13 +46,15 @@ if (isset($_GET['pages']) && !empty($_GET['pages'])) {
 
         // --- PHẦN GIAO CHO GIỎ HÀNG ---
         case "gio-hang":
-            $controller = new CartController($pdo); // Truyền trực tiếp $pdo vào như các file Model
-            $controller->index(); // Gọi hàm xử lý lấy dữ liệu (Session/CSDL) và require View
+            $controller = new CartController($pdo);
+            $controller->index();
             break;
 
         case "them-gio-hang":
             $controller = new CartController($pdo);
-            $controller->addToCart();
+            if (method_exists($controller, 'addToCart')) {
+                $controller->addToCart();
+            }
             break;
 
         case "cap-nhat-gio-hang":
@@ -51,13 +62,18 @@ if (isset($_GET['pages']) && !empty($_GET['pages'])) {
             $controller->update();
             break;
 
+        // ĐÃ SỬA LỖI: Thay OrderController thành AdminOrderController cho đúng với lớp thực tế bạn khai báo
         case "thanh-toan":
-            // Phần của Dung (Có thể dùng OrderController xử lý)
-            $controller = new OrderController($pdo);
-            $controller->checkout();
+            $controller = new AdminOrderController($pdo);
+            if (method_exists($controller, 'checkout')) {
+                $controller->checkout();
+            } else {
+                // Nếu chưa viết hàm checkout, tạm thời gọi hàm index để hiển thị giao diện danh sách đơn hàng
+                $controller->index();
+            }
             break;
 
-        // --- PHẦN GIAO CHO NGUYỄN: ADMIN THANH TOÁN / ĐƠN HÀNG ---
+        // --- ADMIN THANH TOÁN / ĐƠN HÀNG (PHẦN CỦA NGUYỄN) ---
         case "admin-don-hang":
             $controller = new AdminOrderController($pdo);
             $controller->index();

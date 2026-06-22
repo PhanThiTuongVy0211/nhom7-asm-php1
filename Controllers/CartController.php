@@ -1,98 +1,67 @@
 <?php
-// Controllers/CartController.php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-
+require_once 'Models/Cart.php';
 class CartController
 {
     private $cartModel;
 
-    public function __construct($pdo)
+    public function __construct()
     {
-        $this->cartModel = new Cart($pdo);
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        // SỬA TẠI ĐÂY: Phải là CartModel() chứ không phải Cart()
+        $this->cartModel = new CartModel();
     }
-
-    // Dòng 13 +  14  hướng và hiển thị danh sách sản phẩm trong giỏ hàng
+    // [Mục 13]: Hiển thị danh sách sản phẩm trong giỏ hàng bằng Session và chuẩn bị vòng lặp
     public function index()
     {
-        $cartItems = [];
+        // Lấy mảng sản phẩm lưu từ Session (Key là ID sản phẩm, Value là số lượng)
+        $cartSession = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
+        $productIds = array_keys($cartSession);
 
-        if (isset($_SESSION['user_id'])) {
-            // Dòng 14: Lấy danh sách sản phẩm từ CSDL nếu đã đăng nhập
-            $cartItems = $this->cartModel->getCartFromDB($_SESSION['user_id']);
-        } else {
-            // Dòng 13: Lấy danh sách sản phẩm từ SESSION nếu chưa đăng nhập
-            if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
-                $cartItems = $_SESSION['cart'];
+        $cartProducts = [];
+        if (!empty($productIds)) {
+            // Lấy dữ liệu gốc của các sản phẩm này từ CSDL
+            $productsFromDb = $this->cartModel->getCartProducts($productIds);
+
+            // Duyệt qua danh sách để kết hợp dữ liệu CSDL với số lượng trong Session
+            if (is_array($productsFromDb)) {
+                foreach ($productsFromDb as $product) {
+                    $productId = $product['id'];
+                    // Đưa số lượng đặt mua từ Session vào mảng hiển thị công việc của Nguyên
+                    $product['quantity'] = $cartSession[$productId];
+                    $cartProducts[] = $product;
+                }
             }
         }
 
-        require_once 'Views/pages/cart.php';
+        // Định vị chính xác tệp giao diện nằm trong thư mục pages của bạn để tránh lỗi mở file
+        if (file_exists('Views/pages/cart.php')) {
+            require_once 'Views/pages/cart.php';
+        } elseif (file_exists('Views/Cart.php')) {
+            require_once 'Views/Cart.php';
+        } else {
+            echo "<h3 style='text-align:center;color:red;margin-top:50px;'>Lỗi: Không tìm thấy file giao diện giỏ hàng (cart.php)!</h3>";
+        }
     }
 
-    // Dòng 15 Cập nhật số lượng sản phẩm trong giỏ hàng
+    // [Mục 15]: Cập nhật số lượng sản phẩm trực tiếp trong giỏ hàng
     public function update()
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $productId = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
-            $cartId = isset($_POST['cart_id']) ? intval($_POST['cart_id']) : 0; // Dùng cho CSDL
-            $quantity = isset($_POST['quantity']) ? intval($_POST['quantity']) : 1;
-
-            if (isset($_SESSION['user_id'])) {
-                // Cập nhật trong CSDL
-                $this->cartModel->updateQuantityInDB($cartId, $quantity);
-            } else {
-                // Cập nhật trong SESSION
-                if ($quantity <= 0) {
-                    unset($_SESSION['cart'][$productId]);
-                } else {
-                    if (isset($_SESSION['cart'][$productId])) {
-                        $_SESSION['cart'][$productId]['quantity'] = $quantity;
-                    }
-                }
-            }
-            header("Location: index.php?action=cart");
-            exit();
-        }
-    }
-
-    // Hàm hỗ trợ thêm sản phẩm vào giỏ hàng (Xử lý cả Session & CSDL)
-    public function addToCart()
-    {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $productId = intval($_POST['product_id']);
-            $quantity = isset($_POST['quantity']) ? intval($_POST['quantity']) : 1;
+            $quantity = intval($_POST['quantity']);
 
-            // Giả định dữ liệu sản phẩm lấy từ ProductModel
-            $productName = $_POST['product_name'];
-            $productPrice = floatval($_POST['product_price']);
-            $productImg = isset($_POST['product_img']) ? $_POST['product_img'] : '';
-
-            if (isset($_SESSION['user_id'])) {
-                // Lưu vào CSDL
-                $this->cartModel->addToCartDB($_SESSION['user_id'], $productId, $quantity);
+            if ($quantity <= 0) {
+                // Nếu hạ số lượng xuống bằng hoặc nhỏ hơn 0, tiến hành xóa sản phẩm khỏi giỏ
+                unset($_SESSION['cart'][$productId]);
             } else {
-                // Lưu vào SESSION
-                if (!isset($_SESSION['cart'])) {
-                    $_SESSION['cart'] = [];
-                }
-
-                if (isset($_SESSION['cart'][$productId])) {
-                    $_SESSION['cart'][$productId]['quantity'] += $quantity;
-                } else {
-                    $_SESSION['cart'][$productId] = [
-                        'id' => $productId,
-                        'name' => $productName,
-                        'price' => $productPrice,
-                        'img' => $productImg,
-                        'quantity' => $quantity
-                    ];
-                }
+                // Cập nhật lại số lượng mới vào Session dữ liệu của Nguyên
+                $_SESSION['cart'][$productId] = $quantity;
             }
-            header("Location: index.php?action=cart");
-            exit();
         }
+        // Sau khi xử lý xong, điều hướng quay lại trang giỏ hàng để cập nhật giao diện trực quan
+        header('Location: index.php?pages=gio-hang');
+        exit();
     }
 }
