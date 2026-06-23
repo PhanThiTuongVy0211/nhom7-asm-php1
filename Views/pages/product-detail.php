@@ -1,21 +1,9 @@
 <?php
-
-require_once __DIR__ . '/../../Controllers/ProductController.php';
-
-$productController = new ProductController();
-
-$id = $_GET['id'] ?? 0;
-
-$product = $productController->find($id);
-
-if (!$product) {
-
-    echo "Không tìm thấy sản phẩm";
+if (!isset($product)) {
+    echo "Không có dữ liệu sản phẩm";
     exit;
 }
-
 ?>
-
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -284,40 +272,32 @@ if (!$product) {
 
     <div class="container">
 
-        
+
 
         <!-- PRODUCT DETAIL -->
         <div class="detail-box">
 
             <!-- IMAGE -->
             <div class="detail-image">
-
-                <img
-                    src="../../assets/<?php echo $product['image']; ?>"
-                    alt="">
-
+                <img src="assets/images/<?php echo $product['Image']; ?>" alt="<?php echo $product['Title']; ?>">
             </div>
 
             <!-- CONTENT -->
             <div class="detail-content">
 
                 <h1>
-                    <?php echo $product['name']; ?>
+                    <?php echo $product['Title']; ?>
                 </h1>
 
                 <div class="price">
-
-                    <?php echo number_format($product['price']); ?>đ
-
+                    Sản phẩm thời trang nữ
                 </div>
-
                 <div class="desc">
 
-                    <?php echo $product['description']; ?>
+                    <?php echo $product['Description']; ?>
 
                     Sản phẩm mang phong cách nữ tính hiện đại,
                     phù hợp đi học, đi chơi, công sở và cafe cuối tuần.
-
                 </div>
 
                 <!-- FEATURE -->
@@ -352,11 +332,7 @@ if (!$product) {
                         -
                     </button>
 
-                    <input
-                        type="text"
-                        id="qty"
-                        value="1"
-                        class="quantity-input">
+                    <input type="text" id="qty" value="1" class="quantity-input">
 
                     <button onclick="increaseQty()">
                         +
@@ -367,10 +343,9 @@ if (!$product) {
                 <!-- BUTTON -->
                 <div class="action">
 
-                    <a
-                        href="../../actions/add-cart.php?id=<?php echo $product['id']; ?>&name=<?php echo urlencode($product['name']); ?>&price=<?php echo $product['price']; ?>&image=<?php echo urlencode($product['image']); ?>"
-                        class="buy-btn">
-                        Thêm vào giỏ hàng
+                    <a href="?pages=gio-hang&id=<?php echo $product['ID']; ?>" class="buy-btn">
+                        <class="buy-btn">
+                            Thêm vào giỏ hàng
                     </a>
 
                     <a href="cart.php" class="cart-btn">

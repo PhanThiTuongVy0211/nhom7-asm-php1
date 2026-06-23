@@ -544,7 +544,7 @@ body{
 
                             <!-- CHI TIẾT -->
                             <a
-                                href="product-detail.php?id=<?php echo $product['id']; ?>"
+                                href="?pages=chi-tiet-san-pham&id=<?php echo $product['id']; ?>"
                                 class="detail-btn">
                                 Chi tiết
                             </a>

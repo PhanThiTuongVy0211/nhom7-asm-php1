@@ -1,19 +1,18 @@
 <!-- why section -->
 <section class="why_section layout_padding">
    <div class="container">
+
       <div class="heading_container heading_center">
-         <h2>
-            Tại Sao Nên Mua Sắm Tại Chúng Tôi
-         </h2>
+         <h2>Tại Sao Nên Mua Sắm Tại Chúng Tôi</h2>
       </div>
- 
+
       <div class="row">
- 
+
          <!-- Giao hàng nhanh -->
          <div class="col-md-4">
-            <div class="box">
+            <div class="box why_box">
                <div class="img-box">
-                  <!-- SVG giữ nguyên -->
+                  <!-- SVG -->
                </div>
                <div class="detail-box">
                   <h5>Giao Hàng Nhanh</h5>
@@ -21,12 +20,12 @@
                </div>
             </div>
          </div>
- 
+
          <!-- Miễn phí vận chuyển -->
          <div class="col-md-4">
-            <div class="box">
+            <div class="box why_box">
                <div class="img-box">
-                  <!-- SVG giữ nguyên -->
+                  <!-- SVG -->
                </div>
                <div class="detail-box">
                   <h5>Miễn Phí Vận Chuyển</h5>
@@ -34,12 +33,12 @@
                </div>
             </div>
          </div>
- 
+
          <!-- Chất lượng tốt nhất -->
          <div class="col-md-4">
-            <div class="box">
+            <div class="box why_box">
                <div class="img-box">
-                  <!-- SVG giữ nguyên -->
+                  <!-- SVG -->
                </div>
                <div class="detail-box">
                   <h5>Chất Lượng Tốt Nhất</h5>
@@ -47,12 +46,11 @@
                </div>
             </div>
          </div>
- 
+
       </div>
    </div>
 </section>
-<!-- end why section -->
- 
+
 <!-- arrival section -->
 <section class="arrival_section">
    <div class="container">
@@ -60,41 +58,44 @@
          <div class="arrival_bg_box">
             <img src="assets/images/arrival-bg.png" alt="">
          </div>
- 
+
          <div class="row">
+
             <div class="col-md-6 ml-auto">
- 
+
                <div class="heading_container remove_line_bt">
-                  <h2>#SảnPhẩmMới</h2>
+                  <h2 class="arrival_title">#SảnPhẩmMới</h2>
                </div>
- 
-               <p style="margin-top: 20px; margin-bottom: 30px;">
+
+               <p class="arrival_desc">
                   Khám phá những mẫu thời trang mới nhất với thiết kế hiện đại,
                   chất liệu cao cấp và phong cách trẻ trung dành cho bạn.
                </p>
- 
-               <!-- Link đến trang sản phẩm -->
-               <a href="?pages=san-pham">
+
+               <!-- BUTTON -->
+               <a href="?pages=san-pham" class="arrival_btn">
                   Mua Ngay
                </a>
- 
+
             </div>
+
          </div>
       </div>
    </div>
+   </div>
 </section>
 <!-- end arrival section -->
- 
+
 <!-- product section -->
 <section class="product_section layout_padding">
    <div class="container">
- 
+
       <div class="heading_container heading_center">
          <h2>Sản Phẩm <span>Của Chúng Tôi</span></h2>
       </div>
- 
+
       <div class="row">
- 
+
          <!-- Product 1 -->
          <div class="col-sm-6 col-md-4 col-lg-4">
             <div class="box">
@@ -119,7 +120,7 @@
                </div>
             </div>
          </div>
- 
+
          <!-- Product 2 -->
          <div class="col-sm-6 col-md-4 col-lg-4">
             <div class="box">
@@ -142,7 +143,7 @@
                </div>
             </div>
          </div>
- 
+
          <!-- Product 3 -->
          <div class="col-sm-6 col-md-4 col-lg-4">
             <div class="box">
@@ -165,20 +166,20 @@
                </div>
             </div>
          </div>
- 
+
       </div>
- 
+
       <!-- Nút xem tất cả sản phẩm -->
       <div class="btn-box">
          <a href="?pages=san-pham">
             Xem Tất Cả Sản Phẩm
          </a>
       </div>
- 
+
    </div>
 </section>
 <!-- end product section -->
- 
+
 <!-- subscribe section -->
 <section class="subscribe_section">
    <div class="container-fluid">
@@ -201,15 +202,15 @@
    </div>
 </section>
 <!-- end subscribe section -->
- 
+
 <!-- client section -->
-<section class="client_section layout_padding">
+<section class="why_section layout_padding fade-up">
    <div class="container">
- 
+
       <div class="heading_container heading_center">
          <h2>Đánh Giá Khách Hàng</h2>
       </div>
- 
+
       <div id="carouselExample3Controls" class="carousel slide" data-ride="carousel">
          <div class="carousel-inner">
             <div class="carousel-item active">
@@ -233,11 +234,11 @@
             </div>
          </div>
       </div>
- 
+
    </div>
 </section>
 <!-- end client section -->
- 
+
 <!-- CTA đăng nhập / đăng ký cuối trang -->
 <section class="cta_section layout_padding" style="text-align:center; padding: 40px 0;">
    <div class="container">
@@ -246,4 +247,84 @@
       <a href="?pages=dang-ky" class="btn btn-primary" style="margin-right:10px;">Đăng Ký</a>
       <a href="?pages=dang-nhap" class="btn btn-outline-secondary">Đăng Nhập</a>
    </div>
+   <script>
+      /* =========================
+         SCROLL ANIMATION
+      ========================= */
+      const elements = document.querySelectorAll(
+         ".why_section, .arrival_section, .product_section, .subscribe_section, .client_section, .cta_section"
+      );
+
+      function reveal() {
+         const trigger = window.innerHeight * 0.85;
+
+         elements.forEach(el => {
+            const top = el.getBoundingClientRect().top;
+
+            if (top < trigger) {
+               el.classList.add("show");
+            }
+         });
+      }
+
+      window.addEventListener("scroll", reveal);
+      window.addEventListener("load", reveal);
+
+
+      /* =========================
+         PAGE TRANSITION (FADE OUT CLICK LINK)
+      ========================= */
+      document.querySelectorAll("a").forEach(link => {
+         link.addEventListener("click", function (e) {
+            const href = this.getAttribute("href");
+
+            if (
+               href &&
+               !href.startsWith("#") &&
+               !href.startsWith("javascript") &&
+               !this.classList.contains("no-anim")
+            ) {
+               e.preventDefault();
+
+               document.body.classList.add("fade-out");
+
+               setTimeout(() => {
+                  window.location.href = href;
+               }, 400);
+            }
+         });
+      });
+   </script>
+   <script>
+      const boxes = document.querySelectorAll(".why_box");
+
+      boxes.forEach(box => {
+         box.addEventListener("click", () => {
+
+            // bỏ active tất cả
+            boxes.forEach(b => b.classList.remove("active"));
+
+            // add active cho cái được click
+            box.classList.add("active");
+
+         });
+      });
+   </script>
+  <script>
+document.addEventListener("DOMContentLoaded", function () {
+
+   const items = document.querySelectorAll(".click-item");
+
+   items.forEach(el => {
+      el.addEventListener("click", function () {
+
+         // nếu là link thì vẫn cho chuyển trang sau 200ms
+         items.forEach(i => i.classList.remove("active"));
+         this.classList.add("active");
+
+      });
+   });
+
+});
+</script>
 </section>

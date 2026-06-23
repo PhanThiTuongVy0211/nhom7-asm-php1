@@ -4,9 +4,13 @@ session_start();
 ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
-
+require_once 'Models/Cart.php';
 require_once "Models/database.php";
+$database = new Database();
+$db = $database->connect();
+
 require_once "Models/Product.php";
+
 $productModel = new ProductModel();
 require_once "Controllers/HomeController.php";
 require_once "Controllers/ProductController.php";
@@ -25,19 +29,20 @@ require "Views/layouts/header.php";
 $page = isset($_GET['pages']) && !empty($_GET['pages']) ? $_GET['pages'] : 'home';
 
 switch ($page) {
+
     case "home":
-    $controllers = new HomeController($productModel);
-    $controllers->renderGiaoDien();
-       break;
+        $controller = new HomeController($productModel);
+        $controller->renderGiaoDien();
+        break;
 
     case "chi-tiet-san-pham":
-    $productController = new ProductController($productModel);
-    $productController->detail();
+        $controller = new ProductController($productModel);
+        $controller->detail();
         break;
 
     case "san-pham":
-    $productController = new ProductController($productModel);
-    $productController->list();
+        $controller = new ProductController($productModel);
+        $controller->list();
         break;
 
     case "gio-hang":
@@ -69,6 +74,6 @@ switch ($page) {
         break;
 }
 
-
 require "Views/layouts/footer.php";
 ?>
+

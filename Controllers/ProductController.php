@@ -1,5 +1,4 @@
 <?php
-
     class ProductController {
     private $productModel;
 
@@ -12,16 +11,23 @@
         require "Views/pages/products.php";
     }
 
-    public function detail() {
-        $id = $_GET['id'] ?? null;
+   public function detail()
+{
+    $id = $_GET['id'] ?? null;
 
-        if (!$id) {
-            echo "Thiếu ID sản phẩm";
-            return;
-        }
-
-        $product = $this->productModel->getProductById($id);
-
-        require "Views/pages/product-detail.php";
+    if (!$id) {
+        echo "Thiếu ID sản phẩm";
+        return;
     }
+
+    $product = $this->productModel->getProductById($id);
+
+    if (!$product) {
+        echo "Không tìm thấy sản phẩm";
+        return;
+    }
+
+    require "Views/pages/product-detail.php";
 }
+}
+

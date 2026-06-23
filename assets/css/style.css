@@ -1124,3 +1124,39 @@ http://kute-themes.com/html/boutique/html/index.html
 https://template.hasthemes.com/noraure/noraure/index.html
 https://preview.hasthemes.com/xoss-preview/xoss/index.html
 
+
+.why_box {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 10px;
+}
+
+/* hover nhẹ */
+.why_box:hover {
+  transform: translateY(-5px);
+}
+
+/* khi click */
+.why_box.active {
+  background: #f7444e;
+  color: #fff;
+  transform: translateY(-10px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+/* chữ đổi màu */
+.why_box.active h5,
+.why_box.active p {
+  color: #fff;
+}
+.click-item {
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.click-item.active {
+  color: #fff;
+  background: #f7444e;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
